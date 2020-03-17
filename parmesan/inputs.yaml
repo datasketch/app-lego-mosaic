@@ -1,43 +1,33 @@
----
-generate:
-  show: true
-  input_info:
-    input: actionButton
-    input_params:
-      inputId: generate_img
-      label: Generate
-  update_param: value
 width:
   show: true
+  depends_on: reactive__width
   input_info:
-    input: sliderInput
+    input_type: sliderInput
     input_params:
-      inputId: width_img
-      label: Width
+      label: "Width"
       min: 0
       max: 300
-      value: 40
+      value: reactive__width
       step: 1
   update_param: value
 height:
   show: true
+  depends_on: reactive__height
   input_info:
-    input: sliderInput
+    input_type: sliderInput
     input_params:
-      inputId: height_img
-      label: Height
+      label: "Height"
       min: 0
       max: 300
-      value: 40
+      value: reactive__height
       step: 1
   update_param: value
 brightness:
   show: true
   input_info:
-    input: sliderInput
+    input_type: sliderInput
     input_params:
-      inputId: brightness_img
-      label: Brightness
+      label: "Brightness"
       min: 0
       max: 10
       value: 1
@@ -45,16 +35,13 @@ brightness:
   update_param: value
 contrast:
   show: true
-  child_info:
-    motfat: color_palette
-    other: false
-    filter: 
-      - bw
+  depends_on:
+    color_palette:
+      equals: bw
   input_info:
-    input: sliderInput
+    input_type: sliderInput
     input_params:
-      inputId: contrast_img
-      label: Contrast
+      label: "Contrast"
       min: 0
       max: 20
       value: 1
@@ -63,10 +50,9 @@ contrast:
 method:
   show: true
   input_info:
-    input: selectizeInput
+    input_type: selectizeInput
     input_params:
-      inputId: method_img
-      label: Method
+      label: "Method"
       choices:
         Clasic:
         - brickr_classic
@@ -85,19 +71,17 @@ method:
 dithering:
   show: true
   input_info:
-    input: checkboxInput
+    input_type: checkboxInput
     input_params:
-      inputId: dithering_img
-      label: Dithering
+      label: "Dithering"
       value: false
   update_param: value
 color_palette:
   show: true
   input_info:
-    input: radioButtons
+    input_type: radioButtons
     input_params:
-      inputId: color_palette_img
-      label: Color palette
+      label: "Color palette"
       choices:
         Universal:
         - universal
@@ -109,23 +93,10 @@ color_palette:
         - bw
       inline: true
   update_param: select
-#color_table:
-#  show: true
-#  input_info:
-#    input: colourInput
-#    input_params:
-#      inputId: color_table_img
-#      label: Colors
-#      value: "#000000"
-#  update_param: value
-nDigits:
+color_table:
   show: true
   input_info:
-    input: numericInput
+    input_type: colorPalette
     input_params:
-      inputId: nDigits_viz
-      label: Number digits
-      value: 2
-      min: 1
-      max: 13
+      colors: "#2313fe"
   update_param: value
