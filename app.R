@@ -4,8 +4,6 @@ library(shinyinvoer)
 library(dsmodules)
 library(purrr)
 library(brickr)
-library(svglite)
-library(rsvg)
 
 
 ui <- panelsPage(panel(title = "Upload Data", 
@@ -38,7 +36,7 @@ ui <- panelsPage(panel(title = "Upload Data",
                        body = div(plotOutput("result"),
                                   shinypanels::modal(id = "test",
                                                      title = "Download plot",
-                                                     dsmodules::downloadImagesUI("download_data_button", "Descarga", c( "jpeg", "pdf", "png", "svg"))),
+                                                     dsmodules::downloadImageUI("download_data_button", "Descarga", c("jpeg", "png", "svg", "pdf"))),
                                   shinypanels::modalButton(label = "Download image", modal_id = "test"))))
 
 
@@ -105,7 +103,6 @@ server <- function(input, output, session) {
   # valores iniciales de parámetros dependientes del input del usuarioe
   # almacenando el width y height de la imágen en reactivos para inicializar los sliders
   width <- reactive({
-    # req(plot_lego$img)
     r0 <- dim(plot_lego$img)[1:2]
     # escalar las dimensiones
     scl <- 78
@@ -156,7 +153,7 @@ server <- function(input, output, session) {
   })
   
   # descargas
-  callModule(downloadImages, "download_data_button", graph = plot_lego$plt, lib = "ggplot", formats = c("jpeg", "pdf", "svg", "png"))
+  callModule(downloadImage, "download_data_button", graph = plot_lego$plt, lib = "ggplot", formats = c("jpeg", "png", "svg", "pdf"))
   
 }
 
