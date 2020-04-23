@@ -9,10 +9,9 @@ library(brickr)
 ui <- panelsPage(panel(title = "Upload Data", 
                        width = 400,
                        body = imageInputUI("initial_data",
-                       # body = f0("initial_data",
                                            choices = list("Sample data" = "sampleData",
                                                           "JPEG/PNG upload" = "fileUpload",
-                                                          "Image addres (url)" = "url"),
+                                                          "Image from URL" = "url"),
                                            selected = "sampleData")),
                  panel(title = "Dataset",
                        width = 400,
@@ -32,7 +31,7 @@ ui <- panelsPage(panel(title = "Upload Data",
                                               src = "data:image/gif;base64,R0lGODlhEAALAPQAAP///wAAANra2tDQ0Orq6gYGBgAAAC4uLoKCgmBgYLq6uiIiIkpKSoqKimRkZL6+viYmJgQEBE5OTubm5tjY2PT09Dg4ONzc3PLy8ra2tqCgoMrKyu7u7gAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCwAAACwAAAAAEAALAAAFLSAgjmRpnqSgCuLKAq5AEIM4zDVw03ve27ifDgfkEYe04kDIDC5zrtYKRa2WQgAh+QQJCwAAACwAAAAAEAALAAAFJGBhGAVgnqhpHIeRvsDawqns0qeN5+y967tYLyicBYE7EYkYAgAh+QQJCwAAACwAAAAAEAALAAAFNiAgjothLOOIJAkiGgxjpGKiKMkbz7SN6zIawJcDwIK9W/HISxGBzdHTuBNOmcJVCyoUlk7CEAAh+QQJCwAAACwAAAAAEAALAAAFNSAgjqQIRRFUAo3jNGIkSdHqPI8Tz3V55zuaDacDyIQ+YrBH+hWPzJFzOQQaeavWi7oqnVIhACH5BAkLAAAALAAAAAAQAAsAAAUyICCOZGme1rJY5kRRk7hI0mJSVUXJtF3iOl7tltsBZsNfUegjAY3I5sgFY55KqdX1GgIAIfkECQsAAAAsAAAAABAACwAABTcgII5kaZ4kcV2EqLJipmnZhWGXaOOitm2aXQ4g7P2Ct2ER4AMul00kj5g0Al8tADY2y6C+4FIIACH5BAkLAAAALAAAAAAQAAsAAAUvICCOZGme5ERRk6iy7qpyHCVStA3gNa/7txxwlwv2isSacYUc+l4tADQGQ1mvpBAAIfkECQsAAAAsAAAAABAACwAABS8gII5kaZ7kRFGTqLLuqnIcJVK0DeA1r/u3HHCXC/aKxJpxhRz6Xi0ANAZDWa+kEAA7AAAAAAAAAAAA"),
                                           HTML("<i class = 'btn-done-indicator fa fa-check' style = 'display: none; margin-left: 18px;'> </i>")))),
                  panel(title = "Viz",
-                       width = 464,
+                       can_collapse = FALSE,
                        body = div(plotOutput("result"),
                                   shinypanels::modal(id = "test",
                                                      title = "Download plot",
@@ -43,9 +42,7 @@ ui <- panelsPage(panel(title = "Upload Data",
 config_path <- "parmesan"
 # Reactive part
 input_ids <- parmesan_input_ids(section = NULL, config_path = "parmesan")
-input_ids_values <- lapply(input_ids, function(i) {
-  NA
-})
+input_ids_values <- lapply(input_ids, function(i) {NA})
 names(input_ids_values) <- input_ids
 
 
@@ -58,7 +55,6 @@ server <- function(input, output, session) {
                               plt = NULL)
   
   datasetInput <- callModule(imageInput,
-  # datasetInput <- callModule(f1,
                              "initial_data",
                              sampleFile = list("Tapete persa" = "www/99028399493-1.jpg",
                                                "Madera tejida" = "www/h1_t.png",
@@ -139,7 +135,6 @@ server <- function(input, output, session) {
                       # color_table = input$color_table_img,
                       method = input$method,
                       color_palette = input$color_palette,
-                      dithering = input$dithering,
                       contrast = input$contrast,
                       brightness = input$brightness) %>%
       build_mosaic()

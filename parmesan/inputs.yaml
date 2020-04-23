@@ -92,7 +92,7 @@ color_palette:
         Grayscale:
         - bw
       inline: true
-  update_param: select
+  update_param: value
 color_table:
   show: true
   input_info:

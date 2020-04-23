@@ -3,7 +3,7 @@ Colors:
 #- color_table
 Mosaic method:
 - method
-- dithering
+#- dithering
 Image properties:
 - brightness
 - contrast
