@@ -1,14 +1,20 @@
-Colors:
-- color_palette
-#- color_table
-Mosaic method:
-- method
-#- dithering
-Image properties:
-- brightness
-- contrast
-Image size:
-- width
-- height
-#Generate:
-#- generate
+colors:
+  label: Colors
+  inputs:
+    - color_palette
+#    - color_table
+method:
+  label: Mosaic method
+  inputs:
+    - method
+#    - dithering
+properties:
+  label: Image properties
+  inputs:
+    - brightness
+    - contrast
+size:
+  label: Image size
+  inputs:
+    - width
+    - height

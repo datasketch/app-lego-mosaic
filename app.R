@@ -18,10 +18,10 @@ ui <- panelsPage(panel(title = "Upload Data",
                        body = imageOutput("data_preview")),
                  panel(title = "Options",
                        width = 400,
-                       body = div(uiOutput("controls0"),
-                                  uiOutput("controls1"),
-                                  uiOutput("controls2"),
-                                  uiOutput("controls3")),
+                       body = uiOutput("controls"),
+                                  # uiOutput("controls1"),
+                                  # uiOutput("controls2"),
+                                  # uiOutput("controls3")),
                        footer =  div(style = "text-align: center; display: flex; align-items: baseline;",
                                      `data-for-btn` = "generate",
                                      actionButton("generate", "Generate", style = "margin: 0;"),
@@ -39,16 +39,17 @@ ui <- panelsPage(panel(title = "Upload Data",
                                   shinypanels::modalButton(label = "Download image", modal_id = "test"))))
 
 
-config_path <- "parmesan"
-# Reactive part
-input_ids <- parmesan_input_ids(section = NULL, config_path = "parmesan")
-input_ids_values <- lapply(input_ids, function(i) {NA})
-names(input_ids_values) <- input_ids
-
-
 server <- function(input, output, session) {
-  
-  react_env <- new.env()
+
+  path <- "parmesan"
+  parmesan <- parmesan_load(path)
+  parmesan_env <- new.env()
+  parmesan_input <- parmesan_watch(input, parmesan)
+  output_parmesan("#controls", 
+                  parmesan = parmesan,
+                  input = input,
+                  output = output,
+                  env = parmesan_env)
   
   # reactivo que almacena el plot y la imagen procesada
   plot_lego <- reactiveValues(img = NULL,
@@ -59,23 +60,6 @@ server <- function(input, output, session) {
                              sampleFile = list("Tapete persa" = "www/99028399493-1.jpg",
                                                "Madera tejida" = "www/h1_t.png",
                                                "Rincón encontrado" = "www/pero.png"))
-  
-  # renderizando los parámetros
-  output$controls0 <- renderUI({
-    parmesan_render_ui(sections = "Colors", config_path = config_path, input = input, env = react_env)
-  })
-  
-  output$controls1 <- renderUI({
-    parmesan_render_ui(sections = "Mosaic method", config_path = config_path, input = input, env = react_env)
-  })
-  
-  output$controls2 <- renderUI({
-    parmesan_render_ui(sections = "Image properties", config_path = config_path, input = input, env = react_env)
-  })
-  
-  output$controls3 <- renderUI({
-    parmesan_render_ui(sections = "Image size", config_path = config_path, input = input, env = react_env)
-  })
   
   # renderizando lo importado
   output$data_preview <- renderImage({
@@ -133,6 +117,7 @@ server <- function(input, output, session) {
     plt <- plot_lego$img %>%
       image_to_mosaic(img_size = c(input$width, input$height),
                       # color_table = input$color_table_img,
+                      # dithering = input$dithering,
                       method = input$method,
                       color_palette = input$color_palette,
                       contrast = input$contrast,
