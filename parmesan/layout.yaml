@@ -2,12 +2,10 @@ colors:
   label: Colors
   inputs:
     - color_palette
-#    - color_table
 method:
   label: Mosaic method
   inputs:
     - method
-#    - dithering
 properties:
   label: Image properties
   inputs:

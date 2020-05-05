@@ -5,23 +5,23 @@ library(dsmodules)
 library(purrr)
 library(brickr)
 
+# Internacionalización
+# Arreglar código
+# Parámetros width y height no son tan independientes
 
 ui <- panelsPage(panel(title = "Upload Data", 
-                       width = 400,
+                       width = 200,
                        body = imageInputUI("initial_data",
                                            choices = list("Sample data" = "sampleData",
                                                           "JPEG/PNG upload" = "fileUpload",
                                                           "Image from URL" = "url"),
                                            selected = "sampleData")),
                  panel(title = "Dataset",
-                       width = 400,
+                       width = 300,
                        body = imageOutput("data_preview")),
                  panel(title = "Options",
-                       width = 400,
+                       width = 250,
                        body = uiOutput("controls"),
-                                  # uiOutput("controls1"),
-                                  # uiOutput("controls2"),
-                                  # uiOutput("controls3")),
                        footer =  div(style = "text-align: center; display: flex; align-items: baseline;",
                                      `data-for-btn` = "generate",
                                      actionButton("generate", "Generate", style = "margin: 0;"),
@@ -32,24 +32,23 @@ ui <- panelsPage(panel(title = "Upload Data",
                                           HTML("<i class = 'btn-done-indicator fa fa-check' style = 'display: none; margin-left: 18px;'> </i>")))),
                  panel(title = "Viz",
                        can_collapse = FALSE,
-                       body = div(plotOutput("result"),
+                       body = div(uiOutput("result", style = "text-align: center;"),
                                   shinypanels::modal(id = "test",
-                                                     title = "Download plot",
-                                                     dsmodules::downloadImageUI("download_data_button", "Descarga", c("jpeg", "png", "svg", "pdf"))),
-                                  shinypanels::modalButton(label = "Download image", modal_id = "test"))))
+                                                     title = "Download image",
+                                                     dsmodules::downloadImageUI("download_data_button", "Download", c("jpeg", "png", "svg", "pdf")))),
+                       footer = shinypanels::modalButton(label = "Download image", modal_id = "test")))
 
 
 server <- function(input, output, session) {
 
   path <- "parmesan"
   parmesan <- parmesan_load(path)
-  parmesan_env <- new.env()
   parmesan_input <- parmesan_watch(input, parmesan)
-  output_parmesan("#controls", 
+  parmesan_alert(parmesan, env = environment())
+  output_parmesan("controls",
                   parmesan = parmesan,
                   input = input,
-                  output = output,
-                  env = parmesan_env)
+                  output = output)
   
   # reactivo que almacena el plot y la imagen procesada
   plot_lego <- reactiveValues(img = NULL,
@@ -85,55 +84,76 @@ server <- function(input, output, session) {
   width <- reactive({
     r0 <- dim(plot_lego$img)[1:2]
     # escalar las dimensiones
-    scl <- 78
+    # scl <- 78
+    scl <- 150
     w1 <- which(r0 == max(r0))
     if (w1 == 1) {
-      (r0[2] * scl) / r0[1]
+      floor((r0[2] * scl) / r0[1])
     } else {
       scl
     }
+    # r0[1]
   })
   
   height <- reactive({
     r0 <- dim(plot_lego$img)[1:2]
+    assign("r0", r0, envir = globalenv())
     # escalar las dimensiones
-    scl <- 78
+    scl <- 150
     w1 <- which(r0 == max(r0))
     if (w1 == 1) {
       scl
     } else {
-      (r0[1] * scl) / r0[2]
+      floor((r0[1] * scl) / r0[2])
     }
+    # r0[2]
   })
   
-  # si cambia la imagen, el mosaico se reinicializa
-  observeEvent(datasetInput(), {
-    plot_lego$plt <- NULL
-  })
   
   # gráfica de lego
   observeEvent(input$generate, {
+    lapply(c("jpeg", "png", "svg", "pdf"), function(z) {
+      buttonId <- paste0("download_data_button-DownloadImg", z)
+      session$sendCustomMessage("setButtonState", c("none", buttonId)) 
+    })
+    
     session$sendCustomMessage("setButtonState", c("loading", "generate"))
     plt <- plot_lego$img %>%
-      image_to_mosaic(img_size = c(input$width, input$height),
+      image_to_mosaic(
+        img_size = c(input$width, input$height),
                       # color_table = input$color_table_img,
                       # dithering = input$dithering,
                       method = input$method,
                       color_palette = input$color_palette,
                       contrast = input$contrast,
-                      brightness = input$brightness) %>%
+        brightness = input$brightness
+                      ) %>%
       build_mosaic()
     plot_lego$plt <- plt
     session$sendCustomMessage("setButtonState", c("done", "generate"))
   })
   
   # renderizando mosaico ggplot
-  output$result <- renderPlot({
+  output$result <- renderUI({
+    if (is.null(plot_lego$plt)) {
+      # img(src = "plt_in.jpeg")
+      img(src = "plt_in.png")
+    } else {
+      plotOutput("plot", height = "61vh")
+    }
+  })
+  
+  output$plot <- renderPlot({
     plot_lego$plt
   })
   
+  # quitando el chulo de generado cuando cualquier parámetro cambia
+  observeEvent(list(parmesan_input(), datasetInput()), {
+    session$sendCustomMessage("setButtonState", c("none", "generate"))
+  })
+  
   # descargas
-  callModule(downloadImage, "download_data_button", graph = plot_lego$plt, lib = "ggplot", formats = c("jpeg", "png", "svg", "pdf"))
+  callModule(downloadImage, "download_data_button", graph = reactive(plot_lego$plt), lib = "ggplot", formats = c("jpeg", "png", "svg", "pdf"))
   
 }
 

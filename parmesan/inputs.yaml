@@ -1,21 +1,21 @@
 width:
   show: true
-  input_type: sliderInput
+  input_type: numericInput
   input_params:
     label: "Width"
     min: 0
-    max: 300
-    value: reactive__width
+    max: 150
+    value: width()
     step: 1
   update_param: value
 height:
   show: true
-  input_type: sliderInput
+  input_type: numericInput
   input_params:
     label: "Height"
     min: 0
-    max: 300
-    value: reactive__height
+    max: 150
+    value: height()
     step: 1
   update_param: value
 brightness:
@@ -59,12 +59,12 @@ method:
       CMC:
       - cmc
     selected: brickr_classic
-dithering:
-  show: true
-  input_type: checkboxInput
-  input_params:
-    label: "Dithering"
-    value: false
+#dithering:
+#  show: true
+#  input_type: checkboxInput
+#  input_params:
+#    label: "Dithering"
+#    value: false
 color_palette:
   show: true
   input_type: radioButtons
@@ -80,8 +80,8 @@ color_palette:
       Grayscale:
       - bw
     inline: true
-color_table:
-  show: true
-  input_type: colorPalette
-  input_params:
-    colors: "#2313fe"
+#color_table:
+#  show: true
+#  input_type: colorPalette
+#  input_params:
+#    colors: "#2313fe"
