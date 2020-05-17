@@ -1,0 +1,23 @@
+upload_data: Subir imágen
+dataset: Imagen
+options: Opciones
+viz: Vizualización
+sample: Imágenes de muestra
+sample_lb: Selecciona una imagen de muestra
+upload: Subir JPEG/PNG
+upload_lb: Escoje archivo JPEG/PNG
+upload_bt_lb: Examinar...
+upload_pl: Ningún archivo seleccionado
+url: URL
+url_lb: Dirección de la imagen
+colors: Colores
+method: Método de mosaico
+properties: Propiedades de imagen
+size: Tamaño de imagen
+color_palette: Paleta de color
+brightness: Brillo
+contrast: Contraste
+width: Ancho
+height: Alto
+generate: Generar
+download_image: Descargar imagen

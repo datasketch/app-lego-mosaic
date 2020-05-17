@@ -2,7 +2,7 @@ width:
   show: true
   input_type: numericInput
   input_params:
-    label: "Width"
+    label: width
     min: 0
     max: 150
     value: width()
@@ -12,7 +12,7 @@ height:
   show: true
   input_type: numericInput
   input_params:
-    label: "Height"
+    label: height
     min: 0
     max: 150
     value: height()
@@ -22,7 +22,7 @@ brightness:
   show: true
   input_type: sliderInput
   input_params:
-    label: "Brightness"
+    label: brightness
     min: 0
     max: 10
     value: 1
@@ -34,7 +34,7 @@ contrast:
       equals: bw
   input_type: sliderInput
   input_params:
-    label: "Contrast"
+    label: contrast
     min: 0
     max: 20
     value: 1
@@ -44,7 +44,7 @@ method:
   show: true
   input_type: selectizeInput
   input_params:
-    label: "Method"
+    label: method
     choices:
       Clasic:
       - brickr_classic
@@ -69,7 +69,7 @@ color_palette:
   show: true
   input_type: radioButtons
   input_params:
-    label: "Color palette"
+    label: color_palette
     choices:
       Universal:
       - universal

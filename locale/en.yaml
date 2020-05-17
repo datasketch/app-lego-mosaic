@@ -1,0 +1,23 @@
+upload_data: Upload image
+dataset: Image
+options: Options
+viz: Viz
+sample: Sample images
+sample_lb: Select a sample image
+upload: JPEG/PNG upload
+upload_lb: Choose JPEG/PNG file
+upload_bt_lb: Browse...
+upload_pl: No file selected
+url: URL
+url_lb: Image address
+colors: Colors
+method: Mosaic method
+properties: Image properties
+size: Image size
+color_palette: Color palette
+brightness: Brightness
+contrast: Contrast
+width: Width
+height: Height
+generate: Generate
+download_image: Download image

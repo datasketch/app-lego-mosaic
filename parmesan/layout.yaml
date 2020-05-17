@@ -1,18 +1,18 @@
 colors:
-  label: Colors
+  label: colors
   inputs:
     - color_palette
 method:
-  label: Mosaic method
+  label: method
   inputs:
     - method
 properties:
-  label: Image properties
+  label: properties
   inputs:
     - brightness
     - contrast
 size:
-  label: Image size
+  label: size
   inputs:
     - width
     - height
