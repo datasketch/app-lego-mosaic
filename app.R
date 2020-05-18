@@ -21,7 +21,6 @@ ui <- panelsPage(useShi18ny(),
                        width = 250,
                        color = "chardonnay",
                        body = uiOutput("controls"),
-                       
                        footer =  div(style = "text-align: center; display: flex; align-items: baseline;",
                                      `data-for-btn` = "generate",
                                      uiOutput("generate_bt"),
@@ -79,7 +78,8 @@ server <- function(input, output, session) {
   })
   
   # reactivo que almacena el plot y la imagen procesada
-  plot_lego <- reactiveValues(img = NULL,
+  plot_lego <- reactiveValues(dtin = NULL,
+                              img = NULL,
                               plt = NULL)
   
   labels <- reactive({
@@ -91,86 +91,61 @@ server <- function(input, output, session) {
          urlLabel = i_("url_lb", lang()))
   })
   
-  # datasetInput <- eventReactive(labels(),  {
-  #   do.call(callModule,
-  #           c(imageInput,
-  #             "initial_data",
-  #             labels()))
-  # })
-
-  # datasetInput <- callModule(imageInput,
-  #                            "initial_data",
-  #                            sampleFile = list("Tapete persa" = "www/99028399493-1.jpg",
-  #                                              "Madera tejida" = "www/h1_t.png",
-  #                                              "Rincón encontrado" = "www/pero.png"))
-  
   observe({
-  datasetInput <- do.call(callModule,
-                          c(imageInput,
-                            "initial_data",
-                            labels()
-                            # list(
-                            # sampleFiles = list("Tapete persa" = "www/99028399493-1.jpg",
-                            #                    "Madera tejida" = "www/h1_t.png",
-                            #                    "Rincón encontrado" = "www/pero.png")
-                            ))
+    plot_lego$dtin <- do.call(callModule,
+                              c(imageInput,
+                                "initial_data",
+                                labels()))
   })
-  #   do.call(callModule,
-  #           c(imageInput,
-  #             "initial_data"#,
-  #             #labels()
-  #             ))
-  # })
   
   # renderizando lo importado
-  # output$data_preview <- renderImage({
-    # req(datasetInput())
-    # dt <- datasetInput()
-    # dt$width <- "100%"
-    # dt
-  # }, deleteFile = FALSE)
+  output$data_preview <- renderImage({
+  req(plot_lego$dtin())
+  dt <- plot_lego$dtin()
+  dt$width <- "100%"
+  dt
+  }, deleteFile = FALSE)
   
   # imágen leída
-  # observeEvent(datasetInput(), {
-    # req(datasetInput()$src)
-    # lg <- datasetInput()$src
-    # r0 <- tryCatch(png::readPNG(lg), error = function(e) e)
-    # r1 <- tryCatch(jpeg::readJPEG(lg), error = function(e) e)
-    # w0 <- which(c(!any(grepl("error", class(r0))), !any(grepl("error", class(r1))))) - 1
-    # r2 <- get(paste0("r", w0))
-    # plot_lego$img <- r2
-  # })
+  observeEvent(plot_lego$dtin(), {
+    req(plot_lego$dtin()$src)
+    lg <- plot_lego$dtin()$src
+    r0 <- tryCatch(png::readPNG(lg), error = function(e) e)
+    r1 <- tryCatch(jpeg::readJPEG(lg), error = function(e) e)
+    w0 <- which(c(!any(grepl("error", class(r0))), !any(grepl("error", class(r1))))) - 1
+    r2 <- get(paste0("r", w0))
+    plot_lego$img <- r2
+  })
   
   # valores iniciales de parámetros dependientes del input del usuarioe
   # almacenando el width y height de la imágen en reactivos para inicializar los sliders
   width <- reactive({
-    # r0 <- dim(plot_lego$img)[1:2]
-    # # escalar las dimensiones
-    # # scl <- 78
-    # scl <- 150
-    # w1 <- which(r0 == max(r0))
-    # if (w1 == 1) {
-    #   floor((r0[2] * scl) / r0[1])
-    # } else {
-    #   scl
-    # }
-    # # r0[1]
-    1
+    req(plot_lego$img)
+    r0 <- dim(plot_lego$img)[1:2]
+    # escalar las dimensiones
+    scl <- 78
+    scl <- 110
+    w1 <- which(r0 == max(r0))
+    if (w1 == 1) {
+      floor((r0[2] * scl) / r0[1])
+    } else {
+      scl
+    }
+    # r0[1]
   })
   
   height <- reactive({
-    # r0 <- dim(plot_lego$img)[1:2]
-    # assign("r0", r0, envir = globalenv())
-    # # escalar las dimensiones
-    # scl <- 150
-    # w1 <- which(r0 == max(r0))
-    # if (w1 == 1) {
-    #   scl
-    # } else {
-    #   floor((r0[1] * scl) / r0[2])
-    # }
-    # # r0[2]
-    2
+    req(plot_lego$img)
+    r0 <- dim(plot_lego$img)[1:2]
+    # escalar las dimensiones
+    scl <- 110
+    w1 <- which(r0 == max(r0))
+    if (w1 == 1) {
+      scl
+    } else {
+      floor((r0[1] * scl) / r0[2])
+    }
+    # r0[2]
   })
   
   
@@ -182,18 +157,18 @@ server <- function(input, output, session) {
     })
     
     session$sendCustomMessage("setButtonState", c("loading", "generate_bt"))
-    # plt <- plot_lego$img %>%
-    #   image_to_mosaic(
-    #     img_size = c(input$width, input$height),
-    #                   # color_table = input$color_table_img,
-    #                   # dithering = input$dithering,
-    #                   method = input$method,
-    #                   color_palette = input$color_palette,
-    #                   contrast = input$contrast,
-    #     brightness = input$brightness
-    #                   ) %>%
-    #   build_mosaic()
-    # plot_lego$plt <- plt
+    plt <- plot_lego$img %>%
+      image_to_mosaic(
+        img_size = c(input$width, input$height),
+                      # color_table = input$color_table_img,
+                      # dithering = input$dithering,
+                      method = input$method,
+                      color_palette = input$color_palette,
+                      contrast = input$contrast,
+        brightness = input$brightness
+                      ) %>%
+      build_mosaic()
+    plot_lego$plt <- plt
     session$sendCustomMessage("setButtonState", c("done", "generate_bt"))
   })
   
@@ -212,9 +187,9 @@ server <- function(input, output, session) {
   })
   
   # quitando el chulo de generado cuando cualquier parámetro cambia
-  # observeEvent(list(parmesan_input(), datasetInput()), {
-  #   session$sendCustomMessage("setButtonState", c("none", "generate_bt"))
-  # })
+  observeEvent(list(parmesan_input(), datasetInput()), {
+    session$sendCustomMessage("setButtonState", c("none", "generate_bt"))
+  })
   
   # descargas
   callModule(downloadImage, "download_data_button", graph = reactive(plot_lego$plt), lib = "ggplot", formats = c("jpeg", "png", "svg", "pdf"))
