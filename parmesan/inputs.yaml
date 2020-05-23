@@ -59,6 +59,10 @@ method:
       CMC:
       - cmc
     selected: brickr_classic
+  input_info:
+    icon: info-circle
+    text: info_mt
+    #icon-align: right
 #dithering:
 #  show: true
 #  input_type: checkboxInput
@@ -71,15 +75,14 @@ color_palette:
   input_params:
     label: color_palette
     choices:
-      Universal:
       - universal
-      Generic:
       - generic
-      Special:
       - special
-      Grayscale:
       - bw
-    inline: true
+  input_info:
+    icon: info-circle
+    text: info_cp
+    #icon-align: right
 #color_table:
 #  show: true
 #  input_type: colorPalette

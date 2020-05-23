@@ -11,9 +11,9 @@ upload_pl: No file selected
 url: URL
 url_lb: Image address
 colors: Colors
-method: Mosaic method
+mosaic: Mosaic
+method: Method
 properties: Image properties
-size: Image size
 color_palette: Color palette
 brightness: Brightness
 contrast: Contrast
@@ -21,3 +21,9 @@ width: Width
 height: Height
 generate: Generate
 download_image: Download image
+universal: Universal
+generic: Generic
+special: Special
+bw: Grayscale
+info_cp: "Groups of colors for the bricks: universal -common colors, special and generic -not so common colors and grayscale"
+info_mt: "Algorithm used for defining when to use different brick colors that represent different color areas in the original image"

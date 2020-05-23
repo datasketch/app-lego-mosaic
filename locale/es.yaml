@@ -3,7 +3,7 @@ dataset: Imagen
 options: Opciones
 viz: Vizualización
 sample: Imágenes de muestra
-sample_lb: Selecciona una imagen de muestra
+sample_lb: Selecciona imagen de muestra
 upload: Subir JPEG/PNG
 upload_lb: Escoje archivo JPEG/PNG
 upload_bt_lb: Examinar...
@@ -11,9 +11,9 @@ upload_pl: Ningún archivo seleccionado
 url: URL
 url_lb: Dirección de la imagen
 colors: Colores
-method: Método de mosaico
+mosaic: Mosaico
+method: Método
 properties: Propiedades de imagen
-size: Tamaño de imagen
 color_palette: Paleta de color
 brightness: Brillo
 contrast: Contraste
@@ -21,3 +21,9 @@ width: Ancho
 height: Alto
 generate: Generar
 download_image: Descargar imagen
+universal: Universal
+generic: Genérico
+special: Especial
+bw: Escala de grises
+info_cp: "Colores de los ladrillos: universal -colores comunes, especial y generico -colores no tan comunes y escala de grises"
+info_mt: "Algorítmo usado para definir cuando usar diferentes colores en los ladrillos que representan áreas de diferentes colores en la imagen original"

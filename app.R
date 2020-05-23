@@ -2,12 +2,11 @@ library(shinypanels)
 library(parmesan)
 library(shinyinvoer)
 library(shi18ny)
+library(V8)
 library(dsmodules)
 library(purrr)
 library(brickr)
 
-# Internacionalización
-# Arreglar código
 # Parámetros width y height no son tan independientes
 
 ui <- panelsPage(useShi18ny(),
@@ -34,10 +33,11 @@ ui <- panelsPage(useShi18ny(),
                        can_collapse = FALSE,
                        body = div(langSelectorInput("lang", position = "fixed"),
                                   uiOutput("result", style = "text-align: center;"),
-                                  shinypanels::modal(id = "test",
+                                  shinypanels::modal(id = "download",
                                                      title = ui_("download_image"),
                                                      uiOutput("modal"))),
-                       footer = shinypanels::modalButton(label = "Download image", modal_id = "test")))
+                       footer = shinypanels::modalButton(label = "Download image", modal_id = "download")))
+
 
 
 server <- function(input, output, session) {
@@ -60,7 +60,7 @@ server <- function(input, output, session) {
   parmesan <- parmesan_load(path)
   parmesan_input <- parmesan_watch(input, parmesan)
   parmesan_alert(parmesan, env = environment())
-  parmesan_lang <- reactive({i_(parmesan, lang(), keys = c("label", "choices"))})
+  parmesan_lang <- reactive({i_(parmesan, lang(), keys = c("label", "choices", "text"))})
   output_parmesan("controls",
                   parmesan = parmesan_lang,
                   input = input,
@@ -98,6 +98,13 @@ server <- function(input, output, session) {
                                 labels()))
   })
   
+  # updating names choices of inputs depending on language
+  observeEvent(lang(), {
+    ch <- as.character(parmesan$properties$inputs[[1]]$input_params$choices)
+    names(ch) <- i_(ch, lang())
+    updateRadioButtons(session, "color_palette", choices = ch, selected = input$color_palette)
+  })
+  
   # renderizando lo importado
   output$data_preview <- renderImage({
   req(plot_lego$dtin())
@@ -123,8 +130,8 @@ server <- function(input, output, session) {
     req(plot_lego$img)
     r0 <- dim(plot_lego$img)[1:2]
     # escalar las dimensiones
-    scl <- 78
-    scl <- 110
+    scl <- 63
+    scl <- 90
     w1 <- which(r0 == max(r0))
     if (w1 == 1) {
       floor((r0[2] * scl) / r0[1])
@@ -138,7 +145,7 @@ server <- function(input, output, session) {
     req(plot_lego$img)
     r0 <- dim(plot_lego$img)[1:2]
     # escalar las dimensiones
-    scl <- 110
+    scl <- 90
     w1 <- which(r0 == max(r0))
     if (w1 == 1) {
       scl
@@ -155,7 +162,6 @@ server <- function(input, output, session) {
       buttonId <- paste0("download_data_button-DownloadImg", z)
       session$sendCustomMessage("setButtonState", c("none", buttonId)) 
     })
-    
     session$sendCustomMessage("setButtonState", c("loading", "generate_bt"))
     plt <- plot_lego$img %>%
       image_to_mosaic(
@@ -187,7 +193,7 @@ server <- function(input, output, session) {
   })
   
   # quitando el chulo de generado cuando cualquier parámetro cambia
-  observeEvent(list(parmesan_input(), datasetInput()), {
+  observeEvent(list(parmesan_input(), plot_lego$dtin), {
     session$sendCustomMessage("setButtonState", c("none", "generate_bt"))
   })
   
@@ -195,6 +201,7 @@ server <- function(input, output, session) {
   callModule(downloadImage, "download_data_button", graph = reactive(plot_lego$plt), lib = "ggplot", formats = c("jpeg", "png", "svg", "pdf"))
   
 }
+
 
 
 shinyApp(ui, server)

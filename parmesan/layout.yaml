@@ -1,18 +1,12 @@
-colors:
-  label: colors
-  inputs:
-    - color_palette
-method:
-  label: method
+mosaic:
+  label: mosaic
   inputs:
     - method
 properties:
   label: properties
   inputs:
-    - brightness
+    - color_palette
     - contrast
-size:
-  label: size
-  inputs:
+    - brightness
     - width
     - height
