@@ -4,6 +4,9 @@ options: Options
 viz: Viz
 sample: Sample images
 sample_lb: Select a sample image
+sample_ch_nm_0: Rain go
+sample_ch_nm_1: Persian rug
+sample_ch_nm_2: Wunning
 upload: JPEG/PNG upload
 upload_lb: Choose JPEG/PNG file
 upload_bt_lb: Browse...
@@ -25,5 +28,5 @@ universal: Universal
 generic: Generic
 special: Special
 bw: Grayscale
-info_cp: "Groups of colors for the bricks: universal -common colors, special and generic -not so common colors and grayscale"
+info_cp: "Groups of colors for the bricks: universal (common colors), special and generic (not so common colors) and grayscale"
 info_mt: "Algorithm used for defining when to use different brick colors that represent different color areas in the original image"

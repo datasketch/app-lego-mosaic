@@ -4,6 +4,9 @@ options: Opções
 viz: Visualização
 sample: Imagens de amostra
 sample_lb: Selecciona imagem de amostra
+sample_ch_nm_0: Chuva acontece
+sample_ch_nm_1: Tapete persa
+sample_ch_nm_2: Correu
 upload: Subir JPEG/PNG
 upload_lb: Escolher arquivo JPEG/PNG
 upload_bt_lb: Examinar...
@@ -25,5 +28,5 @@ universal: Universal
 generic: Genérico
 special: Especial
 bw: Escala de cinza
-info_cp: "Cores de tijolos: universal -cores comuns, especial e genérico -cores não tão comuns e escala de cinza"
+info_cp: "Cores de tijolos: universal (cores comuns), especial e genérico (cores não tão comuns) e escala de cinza"
 info_mt: "Algoritmo usado para definir quando usar diferentes cores nos tijolos que representam áreas de diferentes cores na imagem original"

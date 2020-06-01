@@ -8,6 +8,7 @@ library(purrr)
 library(brickr)
 
 # Parámetros width y height no son tan independientes
+# download initial image svg y pdf
 
 ui <- panelsPage(useShi18ny(),
                  panel(title = ui_("upload_data"),
@@ -20,7 +21,7 @@ ui <- panelsPage(useShi18ny(),
                        width = 250,
                        color = "chardonnay",
                        body = uiOutput("controls"),
-                       footer =  div(style = "text-align: center; display: flex; align-items: baseline;",
+                       footer =  div(style = "text-align: center; display: flex; align-items: center;",
                                      `data-for-btn` = "generate",
                                      uiOutput("generate_bt"),
                                      span(class = "btn-loading-container",
@@ -41,12 +42,10 @@ ui <- panelsPage(useShi18ny(),
 
 
 server <- function(input, output, session) {
-
-  i18n <- list(defaultLang = "en", availableLangs = c("es", "en", "pt"))
+  
+  i18n <- list(defaultLang = "en", availableLangs = c("es", "en", "pt_BR"))
   lang <- callModule(langSelector, "lang", i18n = i18n, showSelector = TRUE)
-  observeEvent(lang(), {
-    uiLangUpdate(input$shi18ny_ui_classes, lang())
-  })  
+  observeEvent(lang(), {uiLangUpdate(input$shi18ny_ui_classes, lang())})  
   
   output$image_input <- renderUI({
     choices <- c("sampleData", "fileUpload", "url")
@@ -54,6 +53,28 @@ server <- function(input, output, session) {
     imageInputUI("initial_data",
                  choices = choices,
                  selected = ifelse(is.null(input$`initial_data-imageInput`), "sampleData", input$`initial_data-imageInput`))
+  })
+  
+  # reactivo que almacena el plot y la imagen procesada
+  plot_lego <- reactiveValues(dtin = NULL, img = NULL, plt = NULL)
+  
+  labels <- reactive({
+    
+    sm_f <- c("www/abs.jpg", "www/99028399493-1.jpg", "www/h1_t.png")
+    names(sm_f) <- i_(c("sample_ch_nm_0", "sample_ch_nm_1", "sample_ch_nm_2"), lang())
+    
+    list(sampleLabel = i_("sample_lb", lang()), 
+         sampleFiles = sm_f,
+         
+         uploadLabel = i_("upload_lb", lang()),
+         uploadButtonLabel = i_("upload_bt_lb", lang()),
+         uploadPlaceholder = i_("upload_pl", lang()),
+         
+         urlLabel = i_("url_lb", lang()))
+  })
+  
+  observe({
+    plot_lego$dtin <- do.call(callModule, c(imageInput, "initial_data", labels()))
   })
   
   path <- "parmesan"
@@ -72,32 +93,6 @@ server <- function(input, output, session) {
     actionButton("generate", gn, style = "margin: 0;")
   })
   
-  output$modal <- renderUI({
-    dw <- i_("download", lang())
-    downloadImageUI("download_data_button", dw, formats = c("jpeg", "png", "svg", "pdf"))
-  })
-  
-  # reactivo que almacena el plot y la imagen procesada
-  plot_lego <- reactiveValues(dtin = NULL,
-                              img = NULL,
-                              plt = NULL)
-  
-  labels <- reactive({
-    list(sampleLabel = i_("sample_lb", lang()), 
-         sampleFiles = list("Tapete persa" = "www/99028399493-1.jpg",
-                            "Madera tejida" = "www/h1_t.png",
-                            "Rincón encontrado" = "www/pero.png"),
-         uploadLabel = i_("upload_lb", lang()), uploadButtonLabel = i_("upload_bt_lb", lang()), uploadPlaceholder = i_("upload_pl", lang()),
-         urlLabel = i_("url_lb", lang()))
-  })
-  
-  observe({
-    plot_lego$dtin <- do.call(callModule,
-                              c(imageInput,
-                                "initial_data",
-                                labels()))
-  })
-  
   # updating names choices of inputs depending on language
   observeEvent(lang(), {
     ch <- as.character(parmesan$properties$inputs[[1]]$input_params$choices)
@@ -107,10 +102,10 @@ server <- function(input, output, session) {
   
   # renderizando lo importado
   output$data_preview <- renderImage({
-  req(plot_lego$dtin())
-  dt <- plot_lego$dtin()
-  dt$width <- "100%"
-  dt
+    req(plot_lego$dtin())
+    dt <- plot_lego$dtin()
+    dt$width <- "100%"
+    dt
   }, deleteFile = FALSE)
   
   # imágen leída
@@ -124,7 +119,7 @@ server <- function(input, output, session) {
     plot_lego$img <- r2
   })
   
-  # valores iniciales de parámetros dependientes del input del usuarioe
+  # valores iniciales de parámetros dependientes del input del usuario
   # almacenando el width y height de la imágen en reactivos para inicializar los sliders
   width <- reactive({
     req(plot_lego$img)
@@ -155,34 +150,43 @@ server <- function(input, output, session) {
     # r0[2]
   })
   
-  
   # gráfica de lego
   observeEvent(input$generate, {
     lapply(c("jpeg", "png", "svg", "pdf"), function(z) {
       buttonId <- paste0("download_data_button-DownloadImg", z)
       session$sendCustomMessage("setButtonState", c("none", buttonId)) 
     })
-    session$sendCustomMessage("setButtonState", c("loading", "generate_bt"))
-    plt <- plot_lego$img %>%
-      image_to_mosaic(
-        img_size = c(input$width, input$height),
-                      # color_table = input$color_table_img,
-                      # dithering = input$dithering,
-                      method = input$method,
-                      color_palette = input$color_palette,
-                      contrast = input$contrast,
-        brightness = input$brightness
-                      ) %>%
-      build_mosaic()
-    plot_lego$plt <- plt
-    session$sendCustomMessage("setButtonState", c("done", "generate_bt"))
+    if (is.null(plot_lego$img)) {
+      # Sys.sleep(10)
+      plt <- jpeg::readJPEG("www/abs.jpg") %>%
+        image_to_mosaic(img_size = c(90, 60),
+                        # method = input$method,
+        ) %>% 
+        build_mosaic()
+      plot_lego$plt <- plt
+      print("W")
+    } else {
+      
+      session$sendCustomMessage("setButtonState", c("loading", "generate_bt"))
+      plt <- plot_lego$img %>%
+        image_to_mosaic(img_size = c(input$width, input$height),
+                        # color_table = input$color_table_img,
+                        # dithering = input$dithering,
+                        method = input$method,
+                        color_palette = input$color_palette,
+                        contrast = input$contrast,
+                        brightness = input$brightness) %>% 
+        build_mosaic()
+      plot_lego$plt <- plt
+      session$sendCustomMessage("setButtonState", c("done", "generate_bt"))
+    }
   })
+  # }, priority = -5, ignoreNULL = FALSE)
   
   # renderizando mosaico ggplot
   output$result <- renderUI({
     if (is.null(plot_lego$plt)) {
-      # img(src = "plt_in.jpeg")
-      img(src = "plt_in.png")
+      img(src = "pt_ab.png")
     } else {
       plotOutput("plot", height = "61vh")
     }
@@ -197,8 +201,37 @@ server <- function(input, output, session) {
     session$sendCustomMessage("setButtonState", c("none", "generate_bt"))
   })
   
+  output$modal <- renderUI({
+    dw <- i_("download", lang())
+    downloadImageUI("download_data_button", dw, formats = c("jpeg", "png", "svg", "pdf"))
+  })
+  
   # descargas
-  callModule(downloadImage, "download_data_button", graph = reactive(plot_lego$plt), lib = "ggplot", formats = c("jpeg", "png", "svg", "pdf"))
+  observe({
+    if (is.null(plot_lego$plt)) {
+      r0 <- png::readPNG("www/pt_ab.png")
+      lapply(1:2, function(z) {
+        fn <- c("jpeg::writeJPEG", "png::writePNG", "rsvg::rsvg_svg", "rsvg::rsvg_pdf")[z]
+        fr <- c("jpeg", "png", "svg", "pdf")[z]
+        buttonId <- paste0("download_data_button-DownloadImg", fr)
+        output[[paste0("download_data_button-DownloadImg", fr)]] <- shiny::downloadHandler(filename = function() {
+          session$sendCustomMessage("setButtonState", c("loading", buttonId))
+          paste0("plot-", gsub(" ", "_", substr(as.POSIXct(Sys.time()), 1, 19)), ".", fr)
+        }, content = function(file) {
+          if (z %in% 3:4) {
+            tmp <- paste(tempdir(), "svg", sep = ".")
+            svglite::svglite(tmp, width = 10, height = 7)
+            plt0
+            dev.off() 
+          }
+          do.call(eval(parse(text = fn)), list(r0, file))
+          session$sendCustomMessage("setButtonState", c("done", buttonId))
+        })
+      })
+    } else {
+      callModule(downloadImage, "download_data_button", graph = reactive(plot_lego$plt), lib = "ggplot", formats = c("jpeg", "png", "svg", "pdf"))
+    }
+  })
   
 }
 

@@ -1,11 +1,14 @@
-upload_data: Subir imágen
+upload_data: Subir imagen
 dataset: Imagen
 options: Opciones
 viz: Vizualización
 sample: Imágenes de muestra
 sample_lb: Selecciona imagen de muestra
+sample_ch_nm_0: Llovía
+sample_ch_nm_1: Tapete persa
+sample_ch_nm_2: Correl
 upload: Subir JPEG/PNG
-upload_lb: Escoje archivo JPEG/PNG
+upload_lb: Escoge archivo JPEG/PNG
 upload_bt_lb: Examinar...
 upload_pl: Ningún archivo seleccionado
 url: URL
@@ -25,5 +28,5 @@ universal: Universal
 generic: Genérico
 special: Especial
 bw: Escala de grises
-info_cp: "Colores de los ladrillos: universal -colores comunes, especial y generico -colores no tan comunes y escala de grises"
+info_cp: "Colores de los ladrillos: universal (colores comunes), especial y generico (colores no tan comunes) y escala de grises"
 info_mt: "Algorítmo usado para definir cuando usar diferentes colores en los ladrillos que representan áreas de diferentes colores en la imagen original"
