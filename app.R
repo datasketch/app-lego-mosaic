@@ -44,7 +44,7 @@ ui <- panelsPage(useShi18ny(),
 server <- function(input, output, session) {
   
   i18n <- list(defaultLang = "en", availableLangs = c("es", "en", "pt_BR"))
-  lang <- callModule(langSelector, "lang", i18n = i18n, showSelector = TRUE)
+  lang <- callModule(langSelector, "lang", i18n = i18n, showSelector = FALSE)
   observeEvent(lang(), {uiLangUpdate(input$shi18ny_ui_classes, lang())})  
   
   output$image_input <- renderUI({
