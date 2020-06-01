@@ -1,12 +1,12 @@
 upload_data: Upload image
 dataset: Image
 options: Options
-viz: Viz
+viz: Mosaic
 sample: Sample images
 sample_lb: Select a sample image
-sample_ch_nm_0: Rain go
-sample_ch_nm_1: Persian rug
-sample_ch_nm_2: Wunning
+sample_ch_nm_0: It rained
+sample_ch_nm_1: Books rug
+sample_ch_nm_2: Horse
 upload: JPEG/PNG upload
 upload_lb: Choose JPEG/PNG file
 upload_bt_lb: Browse...

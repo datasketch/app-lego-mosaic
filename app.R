@@ -60,7 +60,7 @@ server <- function(input, output, session) {
   
   labels <- reactive({
     
-    sm_f <- c("www/abs.jpg", "www/99028399493-1.jpg", "www/h1_t.png")
+    sm_f <- c("www/abs.jpg", "www/book_rug.jpg", "www/horse.png")
     names(sm_f) <- i_(c("sample_ch_nm_0", "sample_ch_nm_1", "sample_ch_nm_2"), lang())
     
     list(sampleLabel = i_("sample_lb", lang()), 
@@ -156,37 +156,41 @@ server <- function(input, output, session) {
       buttonId <- paste0("download_data_button-DownloadImg", z)
       session$sendCustomMessage("setButtonState", c("none", buttonId)) 
     })
-    if (is.null(plot_lego$img)) {
-      # Sys.sleep(10)
-      plt <- jpeg::readJPEG("www/abs.jpg") %>%
-        image_to_mosaic(img_size = c(90, 60),
-                        # method = input$method,
-        ) %>% 
-        build_mosaic()
-      plot_lego$plt <- plt
-      print("W")
-    } else {
-      
-      session$sendCustomMessage("setButtonState", c("loading", "generate_bt"))
-      plt <- plot_lego$img %>%
-        image_to_mosaic(img_size = c(input$width, input$height),
-                        # color_table = input$color_table_img,
-                        # dithering = input$dithering,
-                        method = input$method,
-                        color_palette = input$color_palette,
-                        contrast = input$contrast,
-                        brightness = input$brightness) %>% 
-        build_mosaic()
-      plot_lego$plt <- plt
-      session$sendCustomMessage("setButtonState", c("done", "generate_bt"))
-    }
+    # if (is.null(plot_lego$img)) {
+    # if (input$`initial_data-inputDataSample` == "www/abs.jpg") {
+    #   # Sys.sleep(10)
+    #   plt <- jpeg::readJPEG("www/abs.jpg") %>%
+    #     image_to_mosaic(img_size = c(90, 60),
+    #                     # method = input$method,
+    #     ) %>% 
+    #     build_mosaic()
+    #   plot_lego$plt <- plt
+    #   print("W")
+    # } else {
+    
+    session$sendCustomMessage("setButtonState", c("loading", "generate_bt"))
+    plt <- plot_lego$img %>%
+      image_to_mosaic(img_size = c(input$width, input$height),
+                      # color_table = input$color_table_img,
+                      # dithering = input$dithering,
+                      method = input$method,
+                      color_palette = input$color_palette,
+                      contrast = input$contrast,
+                      brightness = input$brightness) %>% 
+      build_mosaic()
+    plot_lego$plt <- plt
+    session$sendCustomMessage("setButtonState", c("done", "generate_bt"))
+    # }
   })
-  # }, priority = -5, ignoreNULL = FALSE)
+  # }, ignoreNULL = FALSE)
   
   # renderizando mosaico ggplot
   output$result <- renderUI({
-    if (is.null(plot_lego$plt)) {
-      img(src = "pt_ab.png")
+    ls <- list("www/abs.jpg" = "abs_lg.png",
+               "www/book_rug.jpg" = "book_rug_lg.jpeg",
+               "www/horse.png" = "horse_lg.jpeg")
+    if (input$`initial_data-imageInput` == "sampleData") {
+      img(src = ls[[plot_lego$dtin()$src]])
     } else {
       plotOutput("plot", height = "61vh")
     }
@@ -208,12 +212,17 @@ server <- function(input, output, session) {
   
   # descargas
   observe({
-    if (is.null(plot_lego$plt)) {
-      r0 <- png::readPNG("www/pt_ab.png")
-      lapply(1:2, function(z) {
+    req(input$`initial_data-inputDataSample`)
+    ls <- list("www/abs.jpg" = "abs_lg.jpeg",
+               "www/book_rug.jpg" = "book_rug_lg.jpeg",
+               "www/horse.png" = "horse_lg.jpeg")
+    if (input$`initial_data-imageInput` == "sampleData") {
+      r0 <- jpeg::readJPEG(paste0("www/", ls[[plot_lego$dtin()$src]]))
+      lapply(1:4, function(z) {
         fn <- c("jpeg::writeJPEG", "png::writePNG", "rsvg::rsvg_svg", "rsvg::rsvg_pdf")[z]
         fr <- c("jpeg", "png", "svg", "pdf")[z]
         buttonId <- paste0("download_data_button-DownloadImg", fr)
+        session$sendCustomMessage("setButtonState", c("none", buttonId))
         output[[paste0("download_data_button-DownloadImg", fr)]] <- shiny::downloadHandler(filename = function() {
           session$sendCustomMessage("setButtonState", c("loading", buttonId))
           paste0("plot-", gsub(" ", "_", substr(as.POSIXct(Sys.time()), 1, 19)), ".", fr)
@@ -222,7 +231,7 @@ server <- function(input, output, session) {
             tmp <- paste(tempdir(), "svg", sep = ".")
             svglite::svglite(tmp, width = 10, height = 7)
             plt0
-            dev.off() 
+            dev.off()
           }
           do.call(eval(parse(text = fn)), list(r0, file))
           session$sendCustomMessage("setButtonState", c("done", buttonId))

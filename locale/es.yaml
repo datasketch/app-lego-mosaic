@@ -1,12 +1,12 @@
 upload_data: Subir imagen
 dataset: Imagen
 options: Opciones
-viz: Vizualización
+viz: Mosaico
 sample: Imágenes de muestra
 sample_lb: Selecciona imagen de muestra
 sample_ch_nm_0: Llovía
-sample_ch_nm_1: Tapete persa
-sample_ch_nm_2: Correl
+sample_ch_nm_1: Tapete libros
+sample_ch_nm_2: Caballo
 upload: Subir JPEG/PNG
 upload_lb: Escoge archivo JPEG/PNG
 upload_bt_lb: Examinar...
