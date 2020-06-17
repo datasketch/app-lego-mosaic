@@ -216,7 +216,7 @@ server <- function(input, output, session) {
     ls <- list("www/abs.jpg" = "abs_lg.jpeg",
                "www/book_rug.jpg" = "book_rug_lg.jpeg",
                "www/horse.png" = "horse_lg.jpeg")
-    if (input$`initial_data-imageInput` == "sampleData") {
+    if (input$`initial_data-imageInput` == "sampleData" & input$generate == 0) {
       r0 <- jpeg::readJPEG(paste0("www/", ls[[plot_lego$dtin()$src]]))
       lapply(1:4, function(z) {
         fn <- c("jpeg::writeJPEG", "png::writePNG", "rsvg::rsvg_svg", "rsvg::rsvg_pdf")[z]
