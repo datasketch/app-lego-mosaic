@@ -24,9 +24,11 @@ width: Largura
 height: Alta
 generate: Gerar
 download_image: Baixar imagem
+download: Baixar
+get_link: Obter link
 universal: Universal
-generic: Genérico
+generic: Genérica
 special: Especial
 bw: Escala de cinza
-info_cp: "Cores de tijolos: universal (cores comuns), especial e genérico (cores não tão comuns) e escala de cinza"
+info_cp: "Cores de tijolos: universal (cores comuns), especial e genérica (cores não tão comuns) e escala de cinza"
 info_mt: "Algoritmo usado para definir quando usar diferentes cores nos tijolos que representam áreas de diferentes cores na imagem original"

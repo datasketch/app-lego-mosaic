@@ -79,6 +79,7 @@ color_palette:
       - generic
       - special
       - bw
+    selected: universal
   input_info:
     icon: info-circle
     text: info_cp

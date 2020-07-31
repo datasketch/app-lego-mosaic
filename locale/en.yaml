@@ -24,6 +24,8 @@ width: Width
 height: Height
 generate: Generate
 download_image: Download image
+download: Download
+get_link: Get link
 universal: Universal
 generic: Generic
 special: Special
