@@ -4,12 +4,13 @@ library(shinyinvoer)
 library(shi18ny)
 library(V8)
 library(dsmodules)
+library(dspins)
 library(brickr)
 library(shinycustomloader)
 library(magick)
+library(ggplot2)
 
 # Parámetros width y height no son tan independientes
-# loaders con el dropdown...
 
 ui <- panelsPage(includeScript(paste0(system.file("js/", package = "dsmodules"), "downloadGen.js")),
                  useShi18ny(),
@@ -153,6 +154,7 @@ server <- function(input, output, session) {
   observeEvent(input$generate, {
     session$sendCustomMessage("setButtonState", c("loading", "generate_bt"))
     safe_image_to_mosaic <- purrr::safely(image_to_mosaic)
+    
     plt <- plot_lego$img %>%
       safe_image_to_mosaic(img_size = c(input$width, input$height),
                            # color_table = input$color_table_img,
@@ -173,8 +175,15 @@ server <- function(input, output, session) {
     lb <- i_("download_image", lang())
     dw <- i_("download", lang())
     gl <- i_("get_link", lang())
-    downloadImageUI("download_data_button", dropdownLabel = lb, text = dw, formats = c("link", "jpeg", "png"),# "svg", "pdf"), 
-                    display = "dropdown", dropdownWidth = 170, getLinkLabel = gl, modalTitle = gl)
+    mb <- list(textInput("name", i_("gl_name", lang())),
+               textInput("description", i_("gl_description", lang())),
+               selectInput("license", i_("gl_license", lang()), choices = c("CC0", "CC-BY")),
+               selectizeInput("tags", i_("gl_tags", lang()), choices = list("No tag" = "no-tag"), multiple = TRUE, options = list(plugins= list('remove_button', 'drag_drop'))),
+               selectizeInput("category", i_("gl_category", lang()), choices = list("No category" = "no-category")))
+    downloadDsUI("download_data_button", dropdownLabel = lb, text = dw, formats = c("jpeg", "png"),# "svg", "pdf"), 
+                 display = "dropdown", dropdownWidth = 180, getLinkLabel = gl, modalTitle = gl, modalBody = mb,
+                 modalButtonLabel = i_("gl_save", lang()), modalLinkLabel = i_("gl_url", lang()), modalIframeLabel = i_("gl_iframe", lang()),
+                 modalFormatChoices = c("PNG" = "png", "SVG" = "svg"))
   })
   
   # renderizando mosaico ggplot
@@ -203,6 +212,33 @@ server <- function(input, output, session) {
     session$sendCustomMessage("setButtonState", c("none", "generate_bt"))
   })
   
+  # url params
+  par <- list(user_name = "brandon", org_name = NULL)
+  url_par <- reactive({
+    url_params(par, session)
+  })
+  
+  # prepare element for pining (for htmlwidgets or ggplots)
+  # función con user board connect y set locale
+  pin_ <- function(x, bkt, ...) {
+    x <- dsmodules:::eval_reactives(x)
+    bkt <- dsmodules:::eval_reactives(bkt)
+    nm <- input$`download_data_button-modal_form-name`
+    if (!nzchar(input$`download_data_button-modal_form-name`)) {
+      nm <- paste0("saved", "_", gsub("[ _:]", "-", substr(as.POSIXct(Sys.time()), 1, 19)))
+      updateTextInput(session, "download_data_button-modal_form-name", value = nm)
+    }
+    dv <- dsviz(x,
+                name = nm,
+                description = input$`download_data_button-modal_form-description`,
+                license = input$`download_data_button-modal_form-license`,
+                tags = input$`download_data_button-modal_form-tags`,
+                category = input$`download_data_button-modal_form-category`)
+    dspins_user_board_connect(bkt)
+    Sys.setlocale(locale = "en_US.UTF-8")
+    pin(dv, bucket_id = bkt)
+  }
+  
   # descargas
   observe({
     req(input$`initial_data-inputDataSample`)
@@ -216,8 +252,8 @@ server <- function(input, output, session) {
       lapply(1:2, function(z) {
         fn <- c("jpeg::writeJPEG", "png::writePNG", "rsvg::rsvg_svg", "rsvg::rsvg_pdf")[z]
         fr <- c("jpeg", "png", "svg", "pdf")[z]
-        buttonId <- paste0("download_data_button-DownloadImg", fr)
-        output[[paste0("download_data_button-DownloadImg", fr)]] <- shiny::downloadHandler(filename = function() {
+        buttonId <- paste0("download_data_button-download_data_button-DownloadImg", fr)
+        output[[paste0("download_data_button-download_data_button-DownloadImg", fr)]] <- shiny::downloadHandler(filename = function() {
           paste0("plot-", gsub(" ", "_", substr(as.POSIXct(Sys.time()), 1, 19)), ".", fr)
         }, content = function(file) {
           # if (z %in% 3) {
@@ -235,7 +271,10 @@ server <- function(input, output, session) {
         })
       })
     } else {
-      callModule(downloadImage, "download_data_button", graph = reactive(plot_lego$plt$result), lib = "ggplot", formats = c("link", "jpeg", "png"))#, "svg", "pdf"))
+      downloadDsServer("download_data_button", element = reactive(plot_lego$plt$result), formats = c("jpeg", "png"),
+                       errorMessage = i_("gl_error", lang()),
+                       modalFunction = pin_, reactive(plot_lego$plt$result),
+                       bkt = url_par()$inputs$user_name)
     }
   })
   

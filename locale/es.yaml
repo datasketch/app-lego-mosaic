@@ -26,6 +26,16 @@ generate: Generar
 download_image: Descargar imagen
 download: Descargar
 get_link: Obtener enlace
+gl_name: Nombre
+gl_slug: Slug
+gl_description: Descripción
+gl_license: Licencia
+gl_tags: Etiquetas
+gl_category: Categorías
+gl_save: Guardar en dslibrary
+gl_url: URL
+gl_iframe: Copiar para embeber
+gl_error: Ha habido un problema; inténtelo de nuevo en unos momentos.
 universal: Universal
 generic: Genérica
 special: Especial
