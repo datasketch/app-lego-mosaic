@@ -1,6 +1,6 @@
 width:
   show: true
-  input_type: numericInput
+  input_type: numberInput
   input_params:
     label: width
     min: 0
@@ -10,7 +10,7 @@ width:
   update_param: value
 height:
   show: true
-  input_type: numericInput
+  input_type: numberInput
   input_params:
     label: height
     min: 0

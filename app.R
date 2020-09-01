@@ -11,6 +11,13 @@ library(magick)
 library(ggplot2)
 
 # Parámetros width y height no son tan independientes
+# loader gif style
+st <- "
+.loader-img {
+  margin-top: 27%;
+  width: 27% !important;
+}
+"
 
 ui <- panelsPage(includeScript(paste0(system.file("js/", package = "dsmodules"), "downloadGen.js")),
                  useShi18ny(),
@@ -34,6 +41,7 @@ ui <- panelsPage(includeScript(paste0(system.file("js/", package = "dsmodules"),
                                               src = "data:image/gif;base64,R0lGODlhEAALAPQAAP///wAAANra2tDQ0Orq6gYGBgAAAC4uLoKCgmBgYLq6uiIiIkpKSoqKimRkZL6+viYmJgQEBE5OTubm5tjY2PT09Dg4ONzc3PLy8ra2tqCgoMrKyu7u7gAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCwAAACwAAAAAEAALAAAFLSAgjmRpnqSgCuLKAq5AEIM4zDVw03ve27ifDgfkEYe04kDIDC5zrtYKRa2WQgAh+QQJCwAAACwAAAAAEAALAAAFJGBhGAVgnqhpHIeRvsDawqns0qeN5+y967tYLyicBYE7EYkYAgAh+QQJCwAAACwAAAAAEAALAAAFNiAgjothLOOIJAkiGgxjpGKiKMkbz7SN6zIawJcDwIK9W/HISxGBzdHTuBNOmcJVCyoUlk7CEAAh+QQJCwAAACwAAAAAEAALAAAFNSAgjqQIRRFUAo3jNGIkSdHqPI8Tz3V55zuaDacDyIQ+YrBH+hWPzJFzOQQaeavWi7oqnVIhACH5BAkLAAAALAAAAAAQAAsAAAUyICCOZGme1rJY5kRRk7hI0mJSVUXJtF3iOl7tltsBZsNfUegjAY3I5sgFY55KqdX1GgIAIfkECQsAAAAsAAAAABAACwAABTcgII5kaZ4kcV2EqLJipmnZhWGXaOOitm2aXQ4g7P2Ct2ER4AMul00kj5g0Al8tADY2y6C+4FIIACH5BAkLAAAALAAAAAAQAAsAAAUvICCOZGme5ERRk6iy7qpyHCVStA3gNa/7txxwlwv2isSacYUc+l4tADQGQ1mvpBAAIfkECQsAAAAsAAAAABAACwAABS8gII5kaZ7kRFGTqLLuqnIcJVK0DeA1r/u3HHCXC/aKxJpxhRz6Xi0ANAZDWa+kEAA7AAAAAAAAAAAA"),
                                           HTML("<i class = 'btn-done-indicator fa fa-check' style = 'display: none; margin-left: 18px;'> </i>")))),
                  panel(title = ui_("viz"),
+                       style = st,
                        title_plugin = uiOutput("download"),
                        color = "chardonnay",
                        can_collapse = FALSE,
@@ -154,7 +162,8 @@ server <- function(input, output, session) {
   observeEvent(input$generate, {
     session$sendCustomMessage("setButtonState", c("loading", "generate_bt"))
     safe_image_to_mosaic <- purrr::safely(image_to_mosaic)
-    
+    assign("w1", input$height, envir = globalenv())
+    assign("w0", input$width, envir = globalenv())
     plt <- plot_lego$img %>%
       safe_image_to_mosaic(img_size = c(input$width, input$height),
                            # color_table = input$color_table_img,
@@ -272,7 +281,7 @@ server <- function(input, output, session) {
       })
     } else {
       downloadDsServer("download_data_button", element = reactive(plot_lego$plt$result), formats = c("jpeg", "png"),
-                       errorMessage = i_("gl_error", lang()),
+                       errorMessage = NULL,# i_("gl_error", lang()),
                        modalFunction = pin_, reactive(plot_lego$plt$result),
                        bkt = url_par()$inputs$user_name)
     }

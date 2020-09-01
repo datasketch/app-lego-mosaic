@@ -41,4 +41,4 @@ generic: Generic
 special: Special
 bw: Grayscale
 info_cp: "Groups of colors for the bricks: universal (common colors), special and generic (not so common colors) and grayscale"
-info_mt: "Algorithm used for defining when to use different brick colors that represent different color areas in the original image"
+info_mt: "Algorithm used to stablish when to use different brick colors for represent different color areas in the original image"

@@ -41,4 +41,4 @@ generic: Genérica
 special: Especial
 bw: Escala de grises
 info_cp: "Colores de los ladrillos: universal (colores comunes), especial y genérica (colores no tan comunes) y escala de grises"
-info_mt: "Algorítmo usado para definir cuando usar diferentes colores en los ladrillos que representan áreas de diferentes colores en la imagen original"
+info_mt: "Algorítmo usado para definir cuándo usar ladrillos de diferentes colores para representan áreas con diferentes colores en la imagen original"
